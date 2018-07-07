@@ -5,8 +5,20 @@ const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
 // remove old documents from collection before each execution
+/*
 beforeEach((done)=>{
   Todo.remove({}).then(()=>done());
+});
+*/
+
+const todos = [{
+  "text" : "todo number 1"
+}, { "text" : "todo number 2" }];
+
+beforeEach((done)=>{
+  Todo.remove({}).then(()=>{
+    return Todo.insertMany(todos);
+  }).then(()=> done());
 });
 
 // group tests in describe
@@ -26,7 +38,7 @@ describe('POST /todos', ()=>{
         return done(err);
       }
 
-      Todo.find().then((todos)=>{
+      Todo.find({text}).then((todos)=>{
         expect(todos.length).toBe(1); // we inserted one document after deleting the old ones, we check if we only have 1 doc in the collection with find method
         expect(todos[0].text).toBe(text); // check text in the created document is the same text sent in the request
         done();
@@ -45,10 +57,23 @@ describe('POST /todos', ()=>{
             return done(err);
           }
           Todo.find().then((todos) =>{
-            expect(todos.length).toBe(0); // docs will be removed from the collection so there should be no docs created
+            expect(todos.length).toBe(2); // docs will be removed from the collection so there should be no docs created
             done();
           }).catch((e)=>done(e));
      });
 
+  });
+});
+
+// describe to test Get /Todos
+describe('Get /Todos', ()=>{
+  it('should get all todos', (done)=>{
+    request(app)
+    .get('/todos')
+    .expect(200)
+    .expect((res)=>{
+      expect(res.body.todos.length).toBe(2);
+    })
+    .end(done);
   });
 });
