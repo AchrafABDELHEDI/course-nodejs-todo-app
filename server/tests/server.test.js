@@ -1,5 +1,6 @@
 const expect = require('expect');
 const request = require('supertest');
+const {ObjectID} = require('mongodb');
 
 const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
@@ -11,9 +12,10 @@ beforeEach((done)=>{
 });
 */
 
-const todos = [{
-  "text" : "todo number 1"
-}, { "text" : "todo number 2" }];
+const todos = [
+{_id: new ObjectID(), "text" : "todo number 1" },
+{_id: new ObjectID(), "text" : "todo number 2"}
+];
 
 beforeEach((done)=>{
   Todo.remove({}).then(()=>{
@@ -51,7 +53,7 @@ describe('POST /todos', ()=>{
         request(app) // app is express app in server.js
         .post('/todos') // make a post request
         .send(text) // send text in the body (as we did with postman)
-        .expect(400) // expect code 200 : OK
+        .expect(404) // expect code 200 : OK
         .end((err, res)=>{
           if(err){
             return done(err);
@@ -76,4 +78,33 @@ describe('Get /Todos', ()=>{
     })
     .end(done);
   });
+});
+
+// describe to test Get/todos/id
+describe('Get /Todos/:id', ()=>{
+  it('should return todo doc', (done)=>{
+    request(app)
+    .get(`/todos/${todos[0]._id.toHexString()}`)
+    .expect(200)
+    .expect((res)=>{
+      expect(res.body.todo.text).toBe(todos[0].text);
+    })
+    .end(done);
+  });
+
+ // test if todo not found (valid id)
+  it('should return 404 if todo not found', (done)=>{
+    var hexId = new ObjectID().toHexString();
+    request(app)
+    .get(`/todos/${hexId}`)
+    .expect(404)
+    .end(done);
+  });
+
+   it('should return 404 for non object ids', (done)=>{
+    request(app)
+    .get('/todos/123abc')
+    .expect(404)
+    .end(done);
+   });
 });

@@ -18,7 +18,7 @@ var todo = new Todo({
 todo.save().then((doc)=>{
   res.send(doc);
 }, (e)=>{
-  res.status(400).send(e);
+  res.status(404).send(e);
 });
 });
 
@@ -33,19 +33,19 @@ Todo.find().then((todos)=>{
 // Get // todos/12345
 app.get('/todos/:id', (req, res)=>{
   //res.send(req.params);
-  var id = req.params.id;
+  var id = req.params.id; // get the id from the parameter
   // check id is valid
-  if(!ObjectID.isValid(id)){
-    return res.status(400).send();
+  if(!ObjectID.isValid(id)){ // check if id is valid
+    return res.status(404).send(); // send 404 if id is not valid
   }
 
-Todo.findById(id).then((todo)=>{
+Todo.findById(id).then((todo)=>{ // find by id
   if(!todo){
-    res.status(400).send();
+    res.status(404).send(); // send 400 if not found
   }
-  res.send({todo});
+  res.send({todo}); // send todo if found
 }).catch((e)=>{
-  res.status(400).send();
+  res.status(400).send(); // if error send 400
 });
 });
 
