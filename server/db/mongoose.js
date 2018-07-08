@@ -3,6 +3,6 @@ const options = {dbName : 'TodoApp'};
 const url = 'mongodb://localhost:27017/';
 
 mongoose.Promise = global.Promise;
-mongoose.connect(url, options);
+mongoose.connect(process.env.MONGODB_URI || url, options);
 
 module.exports = {mongoose};
