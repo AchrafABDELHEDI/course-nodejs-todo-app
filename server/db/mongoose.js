@@ -1,6 +1,6 @@
-//const mongoose = require('mongoose');
+const mongoose = require('mongoose');
 const options = {dbName : 'heroku_s293xt0j'};
-const options = {dbName : 'TodoApp'};
+//const options = {dbName : 'TodoApp'};
 const url = 'mongodb://localhost:27017/';
 
 mongoose.Promise = global.Promise;
