@@ -6,11 +6,11 @@ const {app} = require('./../server');
 const {Todo} = require('./../models/todo');
 
 // remove old documents from collection before each execution
-/*
+
 beforeEach((done)=>{
   Todo.remove({}).then(()=>done());
 });
-*/
+
 
 const todos = [
 {_id: new ObjectID(), "text" : "todo number 1" },

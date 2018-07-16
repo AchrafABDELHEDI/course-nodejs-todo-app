@@ -1,3 +1,15 @@
+// var env = process.env.NODE_ENV || 'development'; // check the envirement (production, test or dev)
+//
+// console.log('env *****', env);
+//
+// if(env === 'development'){
+//   process.env.PORT = 3000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/';
+// }else if(env === 'test'){
+//   process.env.PORT = 3000;
+//   process.env.MONGODB_URI = 'mongodb://localhost:27017/';
+// }
+
 const _ = require('lodash');
 var express = require('express');
 var bodyParser = require('body-parser');
@@ -91,6 +103,20 @@ app.patch('/todos/:id', (req, res)=>{
     res.status(400).send();
   })
 });
+
+app.post('/users', (req, res)=>{
+  var body = _.pick(req.body, ['email', 'password']);
+  var user = new User(body);
+  user.save().then((user)=>{
+  return user.generateAuthToken();
+}).then((token)=>{
+  res.header('x-auth', token).send(user);
+})
+  .catch((e)=>{
+    res.status(400).send(e);
+  })
+});
+
 
 app.listen(port, ()=>{
   console.log(`Started on port ${port}`);
